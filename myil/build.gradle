@@ -27,7 +27,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 buildscript {
-    ext.kotlin_version = '0.10.1316'
+    ext.kotlin_version = '0.10.770'
     repositories {
         mavenCentral()
     }

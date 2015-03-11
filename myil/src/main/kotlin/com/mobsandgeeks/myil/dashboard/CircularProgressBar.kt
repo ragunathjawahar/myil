@@ -24,7 +24,7 @@ import android.graphics.Paint
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
  */
-public class CircularProgressBar(context: Context, attrs: AttributeSet? = null)
+public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         : View(context, attrs) {
 
     // Constants
@@ -59,11 +59,11 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet? = null)
         val diameter = Math.min(width, height)
         strokeWidth = diameter * STROKE_WIDTH_FRACTION
 
-        // Center
+        // View Center
         val centerX = width / 2
         val centerY = height / 2
 
-        // RectF bounds
+        // Progress bar bounds
         val squareSide = diameter - strokeWidth
         val halfSquareSide = squareSide / 2
         progressBarRectF.left = centerX - halfSquareSide
