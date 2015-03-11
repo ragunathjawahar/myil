@@ -31,6 +31,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     val STROKE_WIDTH_FRACTION = 0.075f
     val COLOR_DEFAULT_PROGRESS_BAR_BG: Int = 0xffababab.toInt()
     val COLOR_DEFAULT_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
+    val MAX_VALUE = 100f;
 
     // Metrics
     var strokeWidth = 0.0f
@@ -38,6 +39,13 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
     // Graphics
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    // Properties
+    public var value: Float = 0f
+        set(value) {
+            $value = value
+            invalidate()
+        }
 
     override fun onDraw(canvas: Canvas) {
         paint.setStrokeWidth(strokeWidth)
@@ -49,7 +57,8 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
         // Progress bar
         paint.setColor(COLOR_DEFAULT_PROGRESS_BAR)
-        canvas.drawArc(progressBarRectF, 0f, 120f, false, paint)
+        val progressAngle = value / MAX_VALUE * 360;
+        canvas.drawArc(progressBarRectF, 0f, progressAngle, false, paint)
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {

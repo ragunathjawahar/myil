@@ -4,14 +4,39 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.mobsandgeeks.myil.dashboard.CircularProgressBar;
+
+import java.util.Random;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 
 public class ShowcaseActivity extends Activity {
+
+    // UI References
+    @InjectView(R.id.circularProgressBar)
+    CircularProgressBar mCircularProgressBar;
+
+    // Attributes
+    private Random mRandom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_showcase);
+        ButterKnife.inject(this);
+
+        mRandom = new Random();
+        mCircularProgressBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int value = mRandom.nextInt(101);
+                mCircularProgressBar.setValue(value);
+            }
+        });
     }
 
     @Override

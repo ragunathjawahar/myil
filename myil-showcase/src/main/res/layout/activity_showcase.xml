@@ -10,6 +10,7 @@
                 tools:context=".ShowcaseActivity">
 
     <com.mobsandgeeks.myil.dashboard.CircularProgressBar
+        android:id="@+id/circularProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
