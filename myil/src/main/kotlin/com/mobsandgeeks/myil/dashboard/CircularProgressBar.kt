@@ -33,8 +33,8 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     val STROKE_WIDTH_FRACTION = 0.075f
     val COLOR_DEFAULT_PROGRESS_BAR_BG: Int = 0xffababab.toInt()
     val COLOR_DEFAULT_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
-    val MAX_VALUE = 100f
-    val DURATION_ANIMATION = 600L
+    val ANIMATION_DEFAULT_DURATION = 600L
+    val DEFAULT_MAX = 100f
 
     // Metrics
     var strokeWidth = 0.0f
@@ -46,16 +46,13 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     public var value: Float = 0f
         set(value) {
             $value = value
-            val newProgressAngle = value / MAX_VALUE * 360
+            animateProgressBar()
+        }
 
-            // Cancel ongoing animation
-            if (progressAnimator.isRunning()) {
-                progressAnimator.cancel()
-            }
-
-            // Start a new animation
-            progressAnimator.setFloatValues(progressAngle, newProgressAngle)
-            progressAnimator.start()
+    public var max: Float = DEFAULT_MAX
+        set(value) {
+            $max = value
+            animateProgressBar()
         }
 
     // Graphics
@@ -103,10 +100,23 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     }
 
     fun initProgressAnimator() {
-        progressAnimator.setDuration(DURATION_ANIMATION)
+        progressAnimator.setDuration(ANIMATION_DEFAULT_DURATION)
         progressAnimator.addUpdateListener({ animation ->
             progressAngle = animation.getAnimatedValue() as Float
             invalidate()
         })
+    }
+
+    fun animateProgressBar() {
+        val newProgressAngle = value / max * 360
+
+        // Cancel ongoing animation
+        if (progressAnimator.isRunning()) {
+            progressAnimator.cancel()
+        }
+
+        // Start a new animation
+        progressAnimator.setFloatValues(progressAngle, newProgressAngle)
+        progressAnimator.start()
     }
 }
