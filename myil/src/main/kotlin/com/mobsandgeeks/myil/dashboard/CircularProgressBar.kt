@@ -24,6 +24,7 @@ import android.animation.ValueAnimator
 import com.mobsandgeeks.myil.R
 import android.content.res.TypedArray
 import android.graphics.Paint.Cap
+import android.os.Handler
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -32,11 +33,20 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         : View(context, attrs) {
 
     // Constants
-    private val STROKE_FRACTION_BAR = 0.075f
-    private val STROKE_FRACTION_BAR_BACKGROUND = 1.0f
+    private val STROKE_FRACTION_BAR_DEFAULT = 0.075f
+    private val STROKE_FRACTION_BAR_MIN = 0.01f
+    private val STROKE_FRACTION_BAR_MAX = 0.20f
+
+    private val STROKE_FRACTION_BAR_BACKGROUND_DEFAULT = 1.0f
+    private val STROKE_FRACTION_BAR_BACKGROUND_MIN = 0.0f
+    private val STROKE_FRACTION_BAR_BACKGROUND_MAX = 1.0f
+
     private val COLOR_BAR = 0xff6a8afe.toInt()
     private val COLOR_BAR_BACKGROUND = 0xffababab.toInt()
-    private val ANIMATION_DURATION = 600L
+
+    private val ANIMATION_DURATION = 750L
+    private val ANIMATION_FIRST_DELAY = 100L
+
     private val MAX_DEFAULT = 100
 
     private val EDGE_FLAT = 0
@@ -53,6 +63,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     // Animation
+    private val animationHandler = Handler()
     private val progressAnimator = ValueAnimator.ofFloat()
 
     // Public properties
@@ -68,7 +79,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
-    public var barStrokeFraction: Float = STROKE_FRACTION_BAR
+    public var barStrokeFraction: Float = STROKE_FRACTION_BAR_DEFAULT
         set(value) {
             assertBarStrokeFraction(value)
             $barStrokeFraction = value
@@ -76,7 +87,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
-    public var barBackgroundStrokeFraction: Float = STROKE_FRACTION_BAR_BACKGROUND
+    public var barBackgroundStrokeFraction: Float = STROKE_FRACTION_BAR_BACKGROUND_DEFAULT
         set(value) {
             assertBarBackgroundStrokeFraction(value)
             $barBackgroundStrokeFraction = value
@@ -142,40 +153,49 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         barRectF.bottom = centerY + halfSquareSide
     }
 
+    override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+        super.onWindowFocusChanged(hasWindowFocus)
+        if (hasWindowFocus) {
+            animateProgressBar(ANIMATION_FIRST_DELAY)
+        }
+    }
+
     private fun obtainXmlAttributes(context: Context, attrs: AttributeSet?) {
         var typedArray: TypedArray = context.obtainStyledAttributes(
                 attrs, R.styleable.CircularProgressBar)
 
         try {
             if (typedArray.hasValue(R.styleable.CircularProgressBar_barColor)) {
-                barColor = typedArray.getColor(
+                $barColor = typedArray.getColor(
                         R.styleable.CircularProgressBar_barColor,
                         COLOR_BAR)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_barBackgroundColor)) {
-                barBackgroundColor = typedArray.getColor(
+                $barBackgroundColor = typedArray.getColor(
                         R.styleable.CircularProgressBar_barBackgroundColor,
                         COLOR_BAR_BACKGROUND)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_barStrokeFraction)) {
-                barStrokeFraction = typedArray.getFloat(
+                $barStrokeFraction = typedArray.getFloat(
                         R.styleable.CircularProgressBar_barStrokeFraction,
-                        STROKE_FRACTION_BAR)
+                        STROKE_FRACTION_BAR_DEFAULT)
+                assertBarStrokeFraction(barStrokeFraction)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_barBackgroundStrokeFraction)) {
-                barBackgroundStrokeFraction = typedArray.getFloat(
+                $barBackgroundStrokeFraction = typedArray.getFloat(
                         R.styleable.CircularProgressBar_barBackgroundStrokeFraction,
-                        STROKE_FRACTION_BAR_BACKGROUND)
+                        STROKE_FRACTION_BAR_BACKGROUND_DEFAULT)
+                assertBarBackgroundStrokeFraction(barBackgroundStrokeFraction)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_edges)) {
                 val xmlEdges = typedArray.getInt(R.styleable.CircularProgressBar_edges, -1)
-                edges = if (xmlEdges == -1 || xmlEdges == EDGE_FLAT) Edge.FLAT else Edge.ROUNDED
+                $edges = if (xmlEdges == -1 || xmlEdges == EDGE_FLAT) Edge.FLAT else Edge.ROUNDED
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_max)) {
-                max = typedArray.getInt(R.styleable.CircularProgressBar_max, MAX_DEFAULT)
+                $max = typedArray.getInt(R.styleable.CircularProgressBar_max, MAX_DEFAULT)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_value)) {
-                value = typedArray.getFloat(R.styleable.CircularProgressBar_value, 0f)
+                $value = typedArray.getFloat(R.styleable.CircularProgressBar_value, 0f)
             }
         } finally {
             typedArray.recycle()
@@ -191,11 +211,13 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     }
 
     private fun assertBarStrokeFraction(value: Float) {
-        assertRange("barStrokeFraction", 0.01f, 0.20f, value)
+        assertRange("barStrokeFraction", STROKE_FRACTION_BAR_MIN,
+                STROKE_FRACTION_BAR_MAX, value)
     }
 
     private fun assertBarBackgroundStrokeFraction(value: Float) {
-        assertRange("barBackgroundStrokeFraction", 0.0f, 1.0f, value)
+        assertRange("barBackgroundStrokeFraction", STROKE_FRACTION_BAR_BACKGROUND_MIN,
+                STROKE_FRACTION_BAR_BACKGROUND_MAX, value)
     }
 
     private fun assertRange(propertyName: String, minValue: Float, maxValue: Float, value: Float) {
@@ -209,17 +231,20 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         return Math.min(getWidth(), getHeight())
     }
 
-    private fun animateProgressBar() {
-        val newProgressAngle = value / max * 360
-
+    private fun animateProgressBar(delay: Long = 0) {
         // Cancel ongoing animation
         if (progressAnimator.isRunning()) {
             progressAnimator.cancel()
         }
 
-        // Start a new animation
-        progressAnimator.setFloatValues(barProgressAngle, newProgressAngle)
-        progressAnimator.start()
+        animationHandler.removeCallbacksAndMessages(null)
+        animationHandler.postDelayed({() ->
+            val newProgressAngle = value / max * 360
+
+            // Start a new animation
+            progressAnimator.setFloatValues(barProgressAngle, newProgressAngle)
+            progressAnimator.start()
+        }, delay)
     }
 
     /**
