@@ -25,6 +25,9 @@ import com.mobsandgeeks.myil.R
 import android.content.res.TypedArray
 import android.graphics.Paint.Cap
 import android.os.Handler
+import android.graphics.Paint.Align
+import android.graphics.Paint.Style
+import android.graphics.Rect
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -44,6 +47,8 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val COLOR_BAR = 0xff6a8afe.toInt()
     private val COLOR_BAR_BACKGROUND = 0xffababab.toInt()
 
+    private val TEXT_SIZE_FRACTION = 0.28f;
+
     private val ANIMATION_DURATION = 750L
     private val ANIMATION_FIRST_DELAY = 100L
 
@@ -55,6 +60,8 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     // Metrics
     private var barStrokeWidth = 0.0f
     private val barRectF = RectF()
+    private val textBoundsRect = Rect()
+    private var textSize = 0.0f
 
     // Properties
     private var barProgressAngle = 0f
@@ -114,12 +121,14 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
     // Initializer
     {
+        paint.setTextAlign(Align.CENTER)
+
         obtainXmlAttributes(context, attrs)
         initProgressAnimator()
     }
 
     override fun onDraw(canvas: Canvas) {
-        paint.setStyle(Paint.Style.STROKE)
+        paint.setStyle(Style.STROKE)
         paint.setStrokeCap(if (Edge.FLAT == edges) Cap.BUTT else Cap.ROUND)
 
         // Progress bar background
@@ -131,6 +140,18 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         paint.setStrokeWidth(barStrokeWidth)
         paint.setColor(barColor)
         canvas.drawArc(barRectF, 0f, barProgressAngle, false, paint)
+
+        // Text
+        paint.setTextSize(textSize)
+        paint.setStyle(Style.FILL)
+        val text = "${(barProgressAngle / 360 * 100).toInt()}%"
+        paint.getTextBounds(text, 0, text.length(), textBoundsRect)
+        val centeredY = barRectF.centerY() + textBoundsRect.height() / 2
+
+        canvas.drawText(text, 0, text.length(),
+                barRectF.centerX(),
+                centeredY,
+                paint)
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
@@ -151,6 +172,9 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         barRectF.top = centerY - halfSquareSide
         barRectF.right = centerX + halfSquareSide
         barRectF.bottom = centerY + halfSquareSide
+
+        // Text
+        textSize = diameter * TEXT_SIZE_FRACTION
     }
 
     override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
