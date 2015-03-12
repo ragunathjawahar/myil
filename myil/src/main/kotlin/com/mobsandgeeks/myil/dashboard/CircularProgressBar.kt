@@ -147,8 +147,6 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
     // Initializer
     {
-        paint.setTextAlign(Align.CENTER)
-
         obtainXmlAttributes(context, attrs)
         initProgressAnimator()
     }
@@ -176,11 +174,13 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             paint.setStyle(Style.FILL)
             paint.setTextSize(textSize)
             paint.setColor(textColor)
-            paint.getTextBounds(text, 0, text.length(), textBoundsRect)
-            val centeredY = barRectF.centerY() + textBoundsRect.height() / 2
 
-            canvas.drawText(text, 0, text.length(),
-                    barRectF.centerX(), centeredY, paint)
+            paint.getTextBounds(text, 0, text.length(), textBoundsRect)
+            val textWidth = paint.measureText(text, 0, text.length())
+            val centerX = barRectF.centerX() - textWidth / 2
+            val centerY = barRectF.centerY() + textBoundsRect.height() / 2
+
+            canvas.drawText(text, 0, text.length(), centerX, centerY, paint)
         }
     }
 
