@@ -38,8 +38,8 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val ANIMATION_DURATION = 600L
     private val DEFAULT_MAX = 100
 
-    private val EDGE_FLAT = 0;
-    private val EDGE_ROUNDED = 1;
+    private val EDGE_FLAT = 0
+    private val EDGE_ROUNDED = 1
 
     // Metrics
     private var strokeWidth = 0.0f
@@ -52,7 +52,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     // Animation
-    private val progressAnimator = ValueAnimator.ofFloat();
+    private val progressAnimator = ValueAnimator.ofFloat()
 
     // Public properties
     public var progressBarColor: Int = COLOR_PROGRESS_BAR
