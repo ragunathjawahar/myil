@@ -2,8 +2,9 @@
 <resources>
 
     <declare-styleable name="CircularProgressBar">
-        <attr name="progressBarColor" format="color|reference" />
-        <attr name="progressBarBackgroundColor" format="color|reference" />
+        <attr name="barColor" format="color|reference" />
+        <attr name="barBackgroundColor" format="color|reference" />
+        <attr name="barBackgroundStrokeFraction" format="float|reference" />
         <attr name="value" format="float|reference" />
         <attr name="max" format="integer|reference" />
         <attr name="edges" format="enum">

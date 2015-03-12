@@ -32,21 +32,22 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         : View(context, attrs) {
 
     // Constants
-    private val STROKE_WIDTH_FRACTION = 0.075f
-    private val COLOR_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
-    private val COLOR_PROGRESS_BAR_BACKGROUND: Int = 0xffababab.toInt()
+    private val STROKE_FRACTION_BAR = 0.075f
+    private val STROKE_FRACTION_BAR_BACKGROUND = 1.0f
+    private val COLOR_BAR = 0xff6a8afe.toInt()
+    private val COLOR_BAR_BACKGROUND = 0xffababab.toInt()
     private val ANIMATION_DURATION = 600L
-    private val DEFAULT_MAX = 100
+    private val MAX_DEFAULT = 100
 
     private val EDGE_FLAT = 0
     private val EDGE_ROUNDED = 1
 
     // Metrics
-    private var strokeWidth = 0.0f
-    private val progressBarRectF = RectF()
+    private var barStrokeWidth = 0.0f
+    private val barRectF = RectF()
 
     // Properties
-    private var progressAngle = 0f
+    private var barProgressAngle = 0f
 
     // Graphics
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -55,15 +56,22 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val progressAnimator = ValueAnimator.ofFloat()
 
     // Public properties
-    public var progressBarColor: Int = COLOR_PROGRESS_BAR
+    public var barColor: Int = COLOR_BAR
         set(value) {
-            $progressBarColor = value
+            $barColor = value
             invalidate()
         }
 
-    public var progressBarBackgroundColor: Int = COLOR_PROGRESS_BAR_BACKGROUND
+    public var barBackgroundColor: Int = COLOR_BAR_BACKGROUND
         set(value) {
-            $progressBarBackgroundColor = value
+            $barBackgroundColor = value
+            invalidate()
+        }
+
+    public var barBackgroundStrokeFraction: Float = STROKE_FRACTION_BAR_BACKGROUND
+        set(value) {
+            assertProgressBarWidth(value)
+            $barBackgroundStrokeFraction = value
             invalidate()
         }
 
@@ -79,7 +87,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             animateProgressBar()
         }
 
-    public var max: Int = DEFAULT_MAX
+    public var max: Int = MAX_DEFAULT
         set(value) {
             $max = value
             animateProgressBar()
@@ -92,17 +100,18 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     }
 
     override fun onDraw(canvas: Canvas) {
-        paint.setStrokeWidth(strokeWidth)
         paint.setStyle(Paint.Style.STROKE)
         paint.setStrokeCap(if (Edge.FLAT == edges) Cap.BUTT else Cap.ROUND)
 
         // Progress bar background
-        paint.setColor(progressBarBackgroundColor)
-        canvas.drawOval(progressBarRectF, paint)
+        paint.setStrokeWidth(barStrokeWidth * barBackgroundStrokeFraction)
+        paint.setColor(barBackgroundColor)
+        canvas.drawOval(barRectF, paint)
 
         // Progress bar
-        paint.setColor(progressBarColor)
-        canvas.drawArc(progressBarRectF, 0f, progressAngle, false, paint)
+        paint.setStrokeWidth(barStrokeWidth)
+        paint.setColor(barColor)
+        canvas.drawArc(barRectF, 0f, barProgressAngle, false, paint)
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
@@ -110,19 +119,19 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
         // Progress bar diameter
         val diameter = Math.min(width, height)
-        strokeWidth = diameter * STROKE_WIDTH_FRACTION
+        barStrokeWidth = diameter * STROKE_FRACTION_BAR
 
         // View Center
         val centerX = width / 2
         val centerY = height / 2
 
         // Progress bar bounds
-        val squareSide = diameter - strokeWidth
+        val squareSide = diameter - barStrokeWidth
         val halfSquareSide = squareSide / 2
-        progressBarRectF.left = centerX - halfSquareSide
-        progressBarRectF.top = centerY - halfSquareSide
-        progressBarRectF.right = centerX + halfSquareSide
-        progressBarRectF.bottom = centerY + halfSquareSide
+        barRectF.left = centerX - halfSquareSide
+        barRectF.top = centerY - halfSquareSide
+        barRectF.right = centerX + halfSquareSide
+        barRectF.bottom = centerY + halfSquareSide
     }
 
     private fun obtainXmlAttributes(context: Context, attrs: AttributeSet?) {
@@ -130,22 +139,27 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                 attrs, R.styleable.CircularProgressBar)
 
         try {
-            if (typedArray.hasValue(R.styleable.CircularProgressBar_progressBarColor)) {
-                progressBarColor = typedArray.getColor(
-                        R.styleable.CircularProgressBar_progressBarColor,
-                        COLOR_PROGRESS_BAR)
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_barColor)) {
+                barColor = typedArray.getColor(
+                        R.styleable.CircularProgressBar_barColor,
+                        COLOR_BAR)
             }
-            if (typedArray.hasValue(R.styleable.CircularProgressBar_progressBarBackgroundColor)) {
-                progressBarBackgroundColor = typedArray.getColor(
-                        R.styleable.CircularProgressBar_progressBarBackgroundColor,
-                        COLOR_PROGRESS_BAR_BACKGROUND)
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_barBackgroundColor)) {
+                barBackgroundColor = typedArray.getColor(
+                        R.styleable.CircularProgressBar_barBackgroundColor,
+                        COLOR_BAR_BACKGROUND)
+            }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_barBackgroundStrokeFraction)) {
+                barBackgroundStrokeFraction = typedArray.getFloat(
+                        R.styleable.CircularProgressBar_barBackgroundStrokeFraction,
+                        STROKE_FRACTION_BAR_BACKGROUND)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_edges)) {
                 val xmlEdges = typedArray.getInt(R.styleable.CircularProgressBar_edges, -1)
                 edges = if (xmlEdges == -1 || xmlEdges == EDGE_FLAT) Edge.FLAT else Edge.ROUNDED
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_max)) {
-                max = typedArray.getInt(R.styleable.CircularProgressBar_max, DEFAULT_MAX)
+                max = typedArray.getInt(R.styleable.CircularProgressBar_max, MAX_DEFAULT)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_value)) {
                 value = typedArray.getFloat(R.styleable.CircularProgressBar_value, 0f)
@@ -158,9 +172,16 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private fun initProgressAnimator() {
         progressAnimator.setDuration(ANIMATION_DURATION)
         progressAnimator.addUpdateListener({ animation ->
-            progressAngle = animation.getAnimatedValue() as Float
+            barProgressAngle = animation.getAnimatedValue() as Float
             invalidate()
         })
+    }
+
+    private fun assertProgressBarWidth(value: Float) {
+        if (value < 0 || value > 1) {
+            throw IllegalArgumentException("'barBackgroundWidth' should be "
+                    + "a float between 0.0 and 1.0, your's was ${value}")
+        }
     }
 
     private fun animateProgressBar() {
@@ -172,7 +193,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         }
 
         // Start a new animation
-        progressAnimator.setFloatValues(progressAngle, newProgressAngle)
+        progressAnimator.setFloatValues(barProgressAngle, newProgressAngle)
         progressAnimator.start()
     }
 
