@@ -82,31 +82,31 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val progressAnimator = ValueAnimator.ofFloat()
 
     // Public properties
-    public var barColor: Int = COLOR_BAR
+    var barColor: Int = COLOR_BAR
         set(value) {
             $barColor = value
             invalidate()
         }
 
-    public var barBackgroundColor: Int = COLOR_BAR_BACKGROUND
+    var barBackgroundColor: Int = COLOR_BAR_BACKGROUND
         set(value) {
             $barBackgroundColor = value
             invalidate()
         }
 
-    public var textColor: Int = COLOR_TEXT
+    var textColor: Int = COLOR_TEXT
         set(value) {
             $textColor = value
             invalidate()
         }
 
-    public var showText: Boolean = SHOW_TEXT
+    var showText: Boolean = SHOW_TEXT
         set(value) {
             $showText = value
             invalidate()
         }
 
-    public var barStrokeFraction: Float = STROKE_FRACTION_BAR_DEFAULT
+    var barStrokeFraction: Float = STROKE_FRACTION_BAR_DEFAULT
         set(value) {
             assertBarStrokeFraction(value)
             $barStrokeFraction = value
@@ -114,32 +114,32 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
-    public var barBackgroundStrokeFraction: Float = STROKE_FRACTION_BAR_BACKGROUND_DEFAULT
+    var barBackgroundStrokeFraction: Float = STROKE_FRACTION_BAR_BACKGROUND_DEFAULT
         set(value) {
             assertBarBackgroundStrokeFraction(value)
             $barBackgroundStrokeFraction = value
             invalidate()
         }
 
-    public var edges: Edge = Edge.FLAT
+    var edges: Edge = Edge.FLAT
         set(value) {
             $edges = value
             invalidate()
         }
 
-    public var displayTextAs: DisplayText = DisplayText.PERCENT
+    var displayTextAs: DisplayText = DisplayText.PERCENT
         set(value) {
             $displayTextAs = value
             invalidate()
         }
 
-    public var progress: Float = 0.0f
+    var progress: Float = 0.0f
         set(value) {
             $progress = value
             animateProgressBar()
         }
 
-    public var max: Float = MAX_DEFAULT
+    var max: Float = MAX_DEFAULT
         set(value) {
             $max = value
             animateProgressBar()
