@@ -102,6 +102,22 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         progressBarRectF.bottom = centerY + halfSquareSide
     }
 
+    private fun obtainXmlAttributes(context: Context, attrs: AttributeSet?) {
+        var typedArray: TypedArray = context.obtainStyledAttributes(
+                attrs, R.styleable.CircularProgressBar)
+
+        try {
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_max)) {
+                max = typedArray.getInt(R.styleable.CircularProgressBar_max, DEFAULT_MAX)
+            }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_value)) {
+                value = typedArray.getFloat(R.styleable.CircularProgressBar_value, 0f)
+            }
+        } finally {
+            typedArray.recycle()
+        }
+    }
+
     private fun initProgressAnimator() {
         progressAnimator.setDuration(ANIMATION_DEFAULT_DURATION)
         progressAnimator.addUpdateListener({ animation ->
@@ -121,21 +137,5 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         // Start a new animation
         progressAnimator.setFloatValues(progressAngle, newProgressAngle)
         progressAnimator.start()
-    }
-
-    private fun obtainXmlAttributes(context: Context, attrs: AttributeSet?) {
-        var typedArray: TypedArray = context.obtainStyledAttributes(
-                attrs, R.styleable.CircularProgressBar)
-
-        try {
-            if (typedArray.hasValue(R.styleable.CircularProgressBar_max)) {
-                max = typedArray.getInt(R.styleable.CircularProgressBar_max, DEFAULT_MAX)
-            }
-            if (typedArray.hasValue(R.styleable.CircularProgressBar_value)) {
-                value = typedArray.getFloat(R.styleable.CircularProgressBar_value, 0f)
-            }
-        } finally {
-            typedArray.recycle()
-        }
     }
 }
