@@ -31,19 +31,32 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         : View(context, attrs) {
 
     // Constants
-    val STROKE_WIDTH_FRACTION = 0.075f
-    val COLOR_DEFAULT_PROGRESS_BAR_BG: Int = 0xffababab.toInt()
-    val COLOR_DEFAULT_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
-    val ANIMATION_DEFAULT_DURATION = 600L
-    val DEFAULT_MAX = 100
+    private val STROKE_WIDTH_FRACTION = 0.075f
+    private val COLOR_DEFAULT_PROGRESS_BAR_BG: Int = 0xffababab.toInt()
+    private val COLOR_DEFAULT_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
+    private val ANIMATION_DEFAULT_DURATION = 600L
+    private val DEFAULT_MAX = 100
 
     // Metrics
-    var strokeWidth = 0.0f
-    val progressBarRectF = RectF()
+    private var strokeWidth = 0.0f
+    private val progressBarRectF = RectF()
 
     // Properties
-    var progressAngle: Float = 0f
+    private var progressAngle: Float = 0f
 
+    // Graphics
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    // Animation
+    private val progressAnimator = ValueAnimator.ofFloat();
+
+    // Initializer
+    {
+        obtainXmlAttributes(context, attrs)
+        initProgressAnimator()
+    }
+
+    // Public properties
     public var value: Float = 0f
         set(value) {
             $value = value
@@ -55,18 +68,6 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             $max = value
             animateProgressBar()
         }
-
-    // Graphics
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-
-    // Animation
-    val progressAnimator = ValueAnimator.ofFloat();
-
-    // Initializer
-    {
-        obtainXmlAttributes(context, attrs)
-        initProgressAnimator()
-    }
 
     override fun onDraw(canvas: Canvas) {
         paint.setStrokeWidth(strokeWidth)
@@ -101,7 +102,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         progressBarRectF.bottom = centerY + halfSquareSide
     }
 
-    fun initProgressAnimator() {
+    private fun initProgressAnimator() {
         progressAnimator.setDuration(ANIMATION_DEFAULT_DURATION)
         progressAnimator.addUpdateListener({ animation ->
             progressAngle = animation.getAnimatedValue() as Float
@@ -109,7 +110,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         })
     }
 
-    fun animateProgressBar() {
+    private fun animateProgressBar() {
         val newProgressAngle = value / max * 360
 
         // Cancel ongoing animation
@@ -122,7 +123,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         progressAnimator.start()
     }
 
-    fun obtainXmlAttributes(context: Context, attrs: AttributeSet?) {
+    private fun obtainXmlAttributes(context: Context, attrs: AttributeSet?) {
         var typedArray: TypedArray = context.obtainStyledAttributes(
                 attrs, R.styleable.CircularProgressBar)
 
