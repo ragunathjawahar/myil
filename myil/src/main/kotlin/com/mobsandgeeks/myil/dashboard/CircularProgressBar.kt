@@ -32,9 +32,9 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
     // Constants
     private val STROKE_WIDTH_FRACTION = 0.075f
-    private val COLOR_DEFAULT_PROGRESS_BAR_BG: Int = 0xffababab.toInt()
-    private val COLOR_DEFAULT_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
-    private val ANIMATION_DEFAULT_DURATION = 600L
+    private val COLOR_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
+    private val COLOR_PROGRESS_BAR_BACKGROUND: Int = 0xffababab.toInt()
+    private val ANIMATION_DURATION = 600L
     private val DEFAULT_MAX = 100
 
     // Metrics
@@ -50,12 +50,6 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     // Animation
     private val progressAnimator = ValueAnimator.ofFloat();
 
-    // Initializer
-    {
-        obtainXmlAttributes(context, attrs)
-        initProgressAnimator()
-    }
-
     // Public properties
     public var value: Float = 0f
         set(value) {
@@ -69,16 +63,34 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             animateProgressBar()
         }
 
+    public var progressBarColor: Int = COLOR_PROGRESS_BAR
+        set(value) {
+            $progressBarColor = value
+            invalidate()
+        }
+
+    public var progressBarBackgroundColor: Int = COLOR_PROGRESS_BAR_BACKGROUND
+        set(value) {
+            $progressBarBackgroundColor = value
+            invalidate()
+        }
+
+    // Initializer
+    {
+        obtainXmlAttributes(context, attrs)
+        initProgressAnimator()
+    }
+
     override fun onDraw(canvas: Canvas) {
         paint.setStrokeWidth(strokeWidth)
         paint.setStyle(Paint.Style.STROKE)
 
         // Progress bar background
-        paint.setColor(COLOR_DEFAULT_PROGRESS_BAR_BG)
+        paint.setColor(progressBarBackgroundColor)
         canvas.drawOval(progressBarRectF, paint)
 
         // Progress bar
-        paint.setColor(COLOR_DEFAULT_PROGRESS_BAR)
+        paint.setColor(progressBarColor)
         canvas.drawArc(progressBarRectF, 0f, progressAngle, false, paint)
     }
 
@@ -107,6 +119,16 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                 attrs, R.styleable.CircularProgressBar)
 
         try {
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_progressBarColor)) {
+                progressBarColor = typedArray.getColor(
+                        R.styleable.CircularProgressBar_progressBarColor,
+                        COLOR_PROGRESS_BAR)
+            }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_progressBarBackgroundColor)) {
+                progressBarBackgroundColor = typedArray.getColor(
+                        R.styleable.CircularProgressBar_progressBarBackgroundColor,
+                        COLOR_PROGRESS_BAR_BACKGROUND)
+            }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_max)) {
                 max = typedArray.getInt(R.styleable.CircularProgressBar_max, DEFAULT_MAX)
             }
@@ -119,7 +141,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     }
 
     private fun initProgressAnimator() {
-        progressAnimator.setDuration(ANIMATION_DEFAULT_DURATION)
+        progressAnimator.setDuration(ANIMATION_DURATION)
         progressAnimator.addUpdateListener({ animation ->
             progressAngle = animation.getAnimatedValue() as Float
             invalidate()

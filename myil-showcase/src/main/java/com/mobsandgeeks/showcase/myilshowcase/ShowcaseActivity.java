@@ -33,7 +33,7 @@ public class ShowcaseActivity extends Activity {
         mCircularProgressBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int value = mRandom.nextInt(mCircularProgressBar.getMax());
+                int value = mRandom.nextInt(mCircularProgressBar.getMax() + 1);
                 mCircularProgressBar.setValue(value);
             }
         });
