@@ -54,7 +54,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val ANIMATION_DURATION = 750L
     private val ANIMATION_FIRST_DELAY = 100L
 
-    private val MAX_DEFAULT = 100
+    private val MAX_DEFAULT = 100.0f
 
     private val EDGE_FLAT = 0
     private val EDGE_ROUNDED = 1
@@ -66,7 +66,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private var textSize = 0.0f
 
     // Properties
-    private var barProgressAngle = 0f
+    private var barProgressAngle = 0.0f
 
     // Graphics
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -115,13 +115,13 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
-    public var value: Float = 0f
+    public var progress: Float = 0.0f
         set(value) {
-            $value = value
+            $progress = value
             animateProgressBar()
         }
 
-    public var max: Int = MAX_DEFAULT
+    public var max: Float = MAX_DEFAULT
         set(value) {
             $max = value
             animateProgressBar()
@@ -147,7 +147,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         // Progress bar
         paint.setStrokeWidth(barStrokeWidth)
         paint.setColor(barColor)
-        canvas.drawArc(barRectF, 0f, barProgressAngle, false, paint)
+        canvas.drawArc(barRectF, 0.0f, barProgressAngle, false, paint)
 
         // Text
         paint.setStyle(Style.FILL)
@@ -230,10 +230,10 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                 $edges = if (xmlEdges == -1 || xmlEdges == EDGE_FLAT) Edge.FLAT else Edge.ROUNDED
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_max)) {
-                $max = typedArray.getInt(R.styleable.CircularProgressBar_max, MAX_DEFAULT)
+                $max = typedArray.getFloat(R.styleable.CircularProgressBar_max, MAX_DEFAULT)
             }
-            if (typedArray.hasValue(R.styleable.CircularProgressBar_value)) {
-                $value = typedArray.getFloat(R.styleable.CircularProgressBar_value, 0f)
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_progress)) {
+                $progress = typedArray.getFloat(R.styleable.CircularProgressBar_progress, 0.0f)
             }
         } finally {
             typedArray.recycle()
@@ -277,7 +277,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
         animationHandler.removeCallbacksAndMessages(null)
         animationHandler.postDelayed({() ->
-            val newProgressAngle = value / max * 360
+            val newProgressAngle = progress / max * 360
 
             // Start a new animation
             progressAnimator.setFloatValues(barProgressAngle, newProgressAngle)

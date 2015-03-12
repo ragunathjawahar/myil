@@ -7,8 +7,8 @@
         <attr name="android:textColor" />
         <attr name="barStrokeFraction" format="float|reference" />
         <attr name="barBackgroundStrokeFraction" format="float|reference" />
-        <attr name="value" format="float|reference" />
-        <attr name="max" format="integer|reference" />
+        <attr name="progress" format="float|reference" />
+        <attr name="max" format="float|reference" />
         <attr name="edges" format="enum">
             <enum name="flat" value="0"/>
             <enum name="rounded" value="1"/>
