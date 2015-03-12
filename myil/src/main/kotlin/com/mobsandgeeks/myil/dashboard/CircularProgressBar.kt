@@ -23,6 +23,7 @@ import android.graphics.Paint
 import android.animation.ValueAnimator
 import com.mobsandgeeks.myil.R
 import android.content.res.TypedArray
+import android.graphics.Paint.Cap
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -37,12 +38,15 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val ANIMATION_DURATION = 600L
     private val DEFAULT_MAX = 100
 
+    private val EDGE_FLAT = 0;
+    private val EDGE_ROUNDED = 1;
+
     // Metrics
     private var strokeWidth = 0.0f
     private val progressBarRectF = RectF()
 
     // Properties
-    private var progressAngle: Float = 0f
+    private var progressAngle = 0f
 
     // Graphics
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -51,18 +55,6 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val progressAnimator = ValueAnimator.ofFloat();
 
     // Public properties
-    public var value: Float = 0f
-        set(value) {
-            $value = value
-            animateProgressBar()
-        }
-
-    public var max: Int = DEFAULT_MAX
-        set(value) {
-            $max = value
-            animateProgressBar()
-        }
-
     public var progressBarColor: Int = COLOR_PROGRESS_BAR
         set(value) {
             $progressBarColor = value
@@ -75,6 +67,24 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
+    public var edges: Edge = Edge.FLAT
+        set(value) {
+            $edges = value
+            invalidate()
+        }
+
+    public var value: Float = 0f
+        set(value) {
+            $value = value
+            animateProgressBar()
+        }
+
+    public var max: Int = DEFAULT_MAX
+        set(value) {
+            $max = value
+            animateProgressBar()
+        }
+
     // Initializer
     {
         obtainXmlAttributes(context, attrs)
@@ -84,6 +94,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     override fun onDraw(canvas: Canvas) {
         paint.setStrokeWidth(strokeWidth)
         paint.setStyle(Paint.Style.STROKE)
+        paint.setStrokeCap(if (Edge.FLAT == edges) Cap.BUTT else Cap.ROUND)
 
         // Progress bar background
         paint.setColor(progressBarBackgroundColor)
@@ -129,6 +140,10 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                         R.styleable.CircularProgressBar_progressBarBackgroundColor,
                         COLOR_PROGRESS_BAR_BACKGROUND)
             }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_edges)) {
+                val xmlEdges = typedArray.getInt(R.styleable.CircularProgressBar_edges, -1)
+                edges = if (xmlEdges == -1 || xmlEdges == EDGE_FLAT) Edge.FLAT else Edge.ROUNDED
+            }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_max)) {
                 max = typedArray.getInt(R.styleable.CircularProgressBar_max, DEFAULT_MAX)
             }
@@ -159,5 +174,13 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         // Start a new animation
         progressAnimator.setFloatValues(progressAngle, newProgressAngle)
         progressAnimator.start()
+    }
+
+    /**
+     * Enumeration to specify the style of the Progress Bar edges
+     */
+    enum class Edge {
+        FLAT
+        ROUNDED
     }
 }

@@ -6,6 +6,10 @@
         <attr name="progressBarBackgroundColor" format="color|reference" />
         <attr name="value" format="float|reference" />
         <attr name="max" format="integer|reference" />
+        <attr name="edges" format="enum">
+            <enum name="flat" value="0"/>
+            <enum name="rounded" value="1"/>
+        </attr>
     </declare-styleable>
 
 </resources>
