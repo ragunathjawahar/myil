@@ -20,6 +20,8 @@ import android.view.View
 import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.Paint
+import android.animation.ValueAnimator
+import android.view.animation.Animation
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -31,21 +33,41 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     val STROKE_WIDTH_FRACTION = 0.075f
     val COLOR_DEFAULT_PROGRESS_BAR_BG: Int = 0xffababab.toInt()
     val COLOR_DEFAULT_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
-    val MAX_VALUE = 100f;
+    val MAX_VALUE = 100f
+    val DURATION_ANIMATION = 600L
 
     // Metrics
     var strokeWidth = 0.0f
     val progressBarRectF = RectF()
 
-    // Graphics
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-
     // Properties
+    var progressAngle: Float = 0f
+
     public var value: Float = 0f
         set(value) {
             $value = value
-            invalidate()
+            val newProgressAngle = value / MAX_VALUE * 360
+
+            // Cancel ongoing animation
+            if (progressAnimator.isRunning()) {
+                progressAnimator.cancel()
+            }
+
+            // Start a new animation
+            progressAnimator.setFloatValues(progressAngle, newProgressAngle)
+            progressAnimator.start()
         }
+
+    // Graphics
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    // Animation
+    val progressAnimator = ValueAnimator.ofFloat();
+
+    // Initializer
+    {
+        initProgressAnimator()
+    }
 
     override fun onDraw(canvas: Canvas) {
         paint.setStrokeWidth(strokeWidth)
@@ -57,7 +79,6 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
         // Progress bar
         paint.setColor(COLOR_DEFAULT_PROGRESS_BAR)
-        val progressAngle = value / MAX_VALUE * 360;
         canvas.drawArc(progressBarRectF, 0f, progressAngle, false, paint)
     }
 
@@ -79,5 +100,13 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         progressBarRectF.top = centerY - halfSquareSide
         progressBarRectF.right = centerX + halfSquareSide
         progressBarRectF.bottom = centerY + halfSquareSide
+    }
+
+    fun initProgressAnimator() {
+        progressAnimator.setDuration(DURATION_ANIMATION)
+        progressAnimator.addUpdateListener({ animation ->
+            progressAngle = animation.getAnimatedValue() as Float
+            invalidate()
+        })
     }
 }
