@@ -13,6 +13,7 @@
             <enum name="flat" value="0"/>
             <enum name="rounded" value="1"/>
         </attr>
+        <attr name="showText" format="boolean|reference"/>
     </declare-styleable>
 
 </resources>

@@ -17,6 +17,7 @@
         app:barStrokeFraction="0.15"
         app:barColor="@android:color/holo_red_dark"
         app:progress="1"
-        app:max="5"/>
+        app:max="5"
+        app:showText="true"/>
 
 </RelativeLayout>

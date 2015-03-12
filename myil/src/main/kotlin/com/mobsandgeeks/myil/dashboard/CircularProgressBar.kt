@@ -51,13 +51,15 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val COLOR_BAR_BACKGROUND = 0xffababab.toInt()
     private val COLOR_TEXT = Color.BLACK
 
-    private val ANIMATION_DURATION = 750L
-    private val ANIMATION_FIRST_DELAY = 100L
-
     private val MAX_DEFAULT = 100.0f
 
     private val EDGE_FLAT = 0
     private val EDGE_ROUNDED = 1
+
+    private val SHOW_TEXT = true
+
+    private val ANIMATION_DURATION = 750L
+    private val ANIMATION_FIRST_DELAY = 100L
 
     // Metrics
     private var barStrokeWidth = 0.0f
@@ -91,6 +93,12 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     public var textColor: Int = COLOR_TEXT
         set(value) {
             $textColor = value
+            invalidate()
+        }
+
+    public var showText: Boolean = SHOW_TEXT
+        set(value) {
+            $showText = value
             invalidate()
         }
 
@@ -150,17 +158,19 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         canvas.drawArc(barRectF, 0.0f, barProgressAngle, false, paint)
 
         // Text
-        paint.setStyle(Style.FILL)
-        paint.setTextSize(textSize)
-        paint.setColor(textColor)
-        val text = "${(barProgressAngle / 360 * 100).toInt()}%"
-        paint.getTextBounds(text, 0, text.length(), textBoundsRect)
-        val centeredY = barRectF.centerY() + textBoundsRect.height() / 2
+        if (showText) {
+            paint.setStyle(Style.FILL)
+            paint.setTextSize(textSize)
+            paint.setColor(textColor)
+            val text = "${(barProgressAngle / 360 * 100).toInt()}%"
+            paint.getTextBounds(text, 0, text.length(), textBoundsRect)
+            val centeredY = barRectF.centerY() + textBoundsRect.height() / 2
 
-        canvas.drawText(text, 0, text.length(),
-                barRectF.centerX(),
-                centeredY,
-                paint)
+            canvas.drawText(text, 0, text.length(),
+                    barRectF.centerX(),
+                    centeredY,
+                    paint)
+        }
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
@@ -234,6 +244,10 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_progress)) {
                 $progress = typedArray.getFloat(R.styleable.CircularProgressBar_progress, 0.0f)
+            }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_showText)) {
+                $showText = typedArray.getBoolean(
+                        R.styleable.CircularProgressBar_showText, SHOW_TEXT)
             }
         } finally {
             typedArray.recycle()
