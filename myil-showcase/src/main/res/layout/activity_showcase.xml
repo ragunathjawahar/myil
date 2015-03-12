@@ -13,7 +13,7 @@
         android:id="@+id/circularProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:barBackgroundStrokeFraction="0.8"
+        app:barStrokeFraction="0.15"
         app:barColor="@android:color/holo_red_dark"
         app:value="1"
         app:max="5"/>

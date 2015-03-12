@@ -68,9 +68,17 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
+    public var barStrokeFraction: Float = STROKE_FRACTION_BAR
+        set(value) {
+            assertBarStrokeFraction(value)
+            $barStrokeFraction = value
+            barStrokeWidth = getDiameter() * value
+            invalidate()
+        }
+
     public var barBackgroundStrokeFraction: Float = STROKE_FRACTION_BAR_BACKGROUND
         set(value) {
-            assertProgressBarWidth(value)
+            assertBarBackgroundStrokeFraction(value)
             $barBackgroundStrokeFraction = value
             invalidate()
         }
@@ -119,7 +127,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
         // Progress bar diameter
         val diameter = Math.min(width, height)
-        barStrokeWidth = diameter * STROKE_FRACTION_BAR
+        barStrokeWidth = diameter * barStrokeFraction
 
         // View Center
         val centerX = width / 2
@@ -149,6 +157,11 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                         R.styleable.CircularProgressBar_barBackgroundColor,
                         COLOR_BAR_BACKGROUND)
             }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_barStrokeFraction)) {
+                barStrokeFraction = typedArray.getFloat(
+                        R.styleable.CircularProgressBar_barStrokeFraction,
+                        STROKE_FRACTION_BAR)
+            }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_barBackgroundStrokeFraction)) {
                 barBackgroundStrokeFraction = typedArray.getFloat(
                         R.styleable.CircularProgressBar_barBackgroundStrokeFraction,
@@ -177,11 +190,23 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         })
     }
 
-    private fun assertProgressBarWidth(value: Float) {
-        if (value < 0 || value > 1) {
-            throw IllegalArgumentException("'barBackgroundWidth' should be "
-                    + "a float between 0.0 and 1.0, your's was ${value}")
+    private fun assertBarStrokeFraction(value: Float) {
+        assertRange("barStrokeFraction", 0.01f, 0.20f, value)
+    }
+
+    private fun assertBarBackgroundStrokeFraction(value: Float) {
+        assertRange("barBackgroundStrokeFraction", 0.0f, 1.0f, value)
+    }
+
+    private fun assertRange(propertyName: String, minValue: Float, maxValue: Float, value: Float) {
+        if (value < minValue || value > maxValue) {
+            throw IllegalArgumentException("'${propertyName}' should be "
+                    + "a float between ${minValue} and ${maxValue}, but was ${value}")
         }
+    }
+
+    private fun getDiameter(): Int {
+        return Math.min(getWidth(), getHeight())
     }
 
     private fun animateProgressBar() {
