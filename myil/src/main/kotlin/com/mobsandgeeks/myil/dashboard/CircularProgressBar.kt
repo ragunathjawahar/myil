@@ -53,13 +53,17 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
     private val MAX_DEFAULT = 100.0f
 
-    private val EDGE_FLAT = 0
-    private val EDGE_ROUNDED = 1
-
     private val SHOW_TEXT = true
 
     private val ANIMATION_DURATION = 750L
     private val ANIMATION_FIRST_DELAY = 100L
+
+    // Enumeration constants
+    private val EDGE_FLAT = 0
+    private val EDGE_ROUNDED = 1
+
+    private val DISPLAY_TEXT_PERCENT = 0
+    private val DISPLAY_TEXT_PROGRESS = 1
 
     // Metrics
     private var barStrokeWidth = 0.0f
@@ -123,6 +127,12 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
+    public var displayTextAs: DisplayText = DisplayText.PERCENT
+        set(value) {
+            $displayTextAs = value
+            invalidate()
+        }
+
     public var progress: Float = 0.0f
         set(value) {
             $progress = value
@@ -159,17 +169,18 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
         // Text
         if (showText) {
+            val isPercent = DisplayText.PERCENT.equals(displayTextAs)
+            val text = if (isPercent) "${(barProgressAngle / 360 * 100).toInt()}%"
+                    else "${(barProgressAngle * max / 360).toInt()}"
+
             paint.setStyle(Style.FILL)
             paint.setTextSize(textSize)
             paint.setColor(textColor)
-            val text = "${(barProgressAngle / 360 * 100).toInt()}%"
             paint.getTextBounds(text, 0, text.length(), textBoundsRect)
             val centeredY = barRectF.centerY() + textBoundsRect.height() / 2
 
             canvas.drawText(text, 0, text.length(),
-                    barRectF.centerX(),
-                    centeredY,
-                    paint)
+                    barRectF.centerX(), centeredY, paint)
         }
     }
 
@@ -249,6 +260,12 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                 $showText = typedArray.getBoolean(
                         R.styleable.CircularProgressBar_showText, SHOW_TEXT)
             }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_displayTextAs)) {
+                val xmlDisplayTextAs = typedArray.getInt(
+                        R.styleable.CircularProgressBar_displayTextAs, -1)
+                val isPercent = xmlDisplayTextAs == -1 || xmlDisplayTextAs == DISPLAY_TEXT_PERCENT
+                $displayTextAs = if (isPercent) DisplayText.PERCENT else DisplayText.PROGRESS
+            }
         } finally {
             typedArray.recycle()
         }
@@ -300,10 +317,18 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     }
 
     /**
-     * Enumeration to specify the style of the Progress Bar edges
+     * Style for the progress bar edges.
      */
     enum class Edge {
         FLAT
         ROUNDED
+    }
+
+    /**
+     * Text display modes.
+     */
+    enum class DisplayText {
+        PERCENT
+        PROGRESS
     }
 }

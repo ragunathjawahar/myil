@@ -14,6 +14,10 @@
             <enum name="rounded" value="1"/>
         </attr>
         <attr name="showText" format="boolean|reference"/>
+        <attr name="displayTextAs" format="enum">
+            <enum name="percent" value="0"/>
+            <enum name="progress" value="1"/>
+        </attr>
     </declare-styleable>
 
 </resources>
