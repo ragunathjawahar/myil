@@ -4,6 +4,7 @@
     <declare-styleable name="CircularProgressBar">
         <attr name="barColor" format="color|reference" />
         <attr name="barBackgroundColor" format="color|reference" />
+        <attr name="android:textColor" />
         <attr name="barStrokeFraction" format="float|reference" />
         <attr name="barBackgroundStrokeFraction" format="float|reference" />
         <attr name="value" format="float|reference" />

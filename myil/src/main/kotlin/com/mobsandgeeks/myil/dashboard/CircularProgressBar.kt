@@ -28,6 +28,7 @@ import android.os.Handler
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
 import android.graphics.Rect
+import android.graphics.Color
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -44,10 +45,11 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val STROKE_FRACTION_BAR_BACKGROUND_MIN = 0.0f
     private val STROKE_FRACTION_BAR_BACKGROUND_MAX = 1.0f
 
+    private val TEXT_SIZE_FRACTION = 0.28f;
+
     private val COLOR_BAR = 0xff6a8afe.toInt()
     private val COLOR_BAR_BACKGROUND = 0xffababab.toInt()
-
-    private val TEXT_SIZE_FRACTION = 0.28f;
+    private val COLOR_TEXT = Color.BLACK
 
     private val ANIMATION_DURATION = 750L
     private val ANIMATION_FIRST_DELAY = 100L
@@ -83,6 +85,12 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     public var barBackgroundColor: Int = COLOR_BAR_BACKGROUND
         set(value) {
             $barBackgroundColor = value
+            invalidate()
+        }
+
+    public var textColor: Int = COLOR_TEXT
+        set(value) {
+            $textColor = value
             invalidate()
         }
 
@@ -142,8 +150,9 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         canvas.drawArc(barRectF, 0f, barProgressAngle, false, paint)
 
         // Text
-        paint.setTextSize(textSize)
         paint.setStyle(Style.FILL)
+        paint.setTextSize(textSize)
+        paint.setColor(textColor)
         val text = "${(barProgressAngle / 360 * 100).toInt()}%"
         paint.getTextBounds(text, 0, text.length(), textBoundsRect)
         val centeredY = barRectF.centerY() + textBoundsRect.height() / 2
@@ -198,6 +207,11 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                 $barBackgroundColor = typedArray.getColor(
                         R.styleable.CircularProgressBar_barBackgroundColor,
                         COLOR_BAR_BACKGROUND)
+            }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_android_textColor)) {
+                $textColor = typedArray.getColor(
+                        R.styleable.CircularProgressBar_android_textColor,
+                        COLOR_TEXT)
             }
             if (typedArray.hasValue(R.styleable.CircularProgressBar_barStrokeFraction)) {
                 $barStrokeFraction = typedArray.getFloat(
