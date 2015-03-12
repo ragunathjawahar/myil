@@ -21,7 +21,8 @@ import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.Paint
 import android.animation.ValueAnimator
-import android.view.animation.Animation
+import com.mobsandgeeks.myil.R
+import android.content.res.TypedArray
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -34,7 +35,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     val COLOR_DEFAULT_PROGRESS_BAR_BG: Int = 0xffababab.toInt()
     val COLOR_DEFAULT_PROGRESS_BAR: Int = 0xff6a8afe.toInt()
     val ANIMATION_DEFAULT_DURATION = 600L
-    val DEFAULT_MAX = 100f
+    val DEFAULT_MAX = 100
 
     // Metrics
     var strokeWidth = 0.0f
@@ -49,7 +50,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             animateProgressBar()
         }
 
-    public var max: Float = DEFAULT_MAX
+    public var max: Int = DEFAULT_MAX
         set(value) {
             $max = value
             animateProgressBar()
@@ -63,6 +64,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
     // Initializer
     {
+        obtainXmlAttributes(context, attrs)
         initProgressAnimator()
     }
 
@@ -118,5 +120,21 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         // Start a new animation
         progressAnimator.setFloatValues(progressAngle, newProgressAngle)
         progressAnimator.start()
+    }
+
+    fun obtainXmlAttributes(context: Context, attrs: AttributeSet?) {
+        var typedArray: TypedArray = context.obtainStyledAttributes(
+                attrs, R.styleable.CircularProgressBar)
+
+        try {
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_max)) {
+                max = typedArray.getInt(R.styleable.CircularProgressBar_max, DEFAULT_MAX)
+            }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_value)) {
+                value = typedArray.getFloat(R.styleable.CircularProgressBar_value, 0f)
+            }
+        } finally {
+            typedArray.recycle()
+        }
     }
 }
