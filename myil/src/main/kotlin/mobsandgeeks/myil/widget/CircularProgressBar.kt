@@ -12,24 +12,21 @@
  * limitations under the License.
  */
 
-package com.mobsandgeeks.myil.dashboard
+package mobsandgeeks.myil.widget
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.graphics.Canvas
+import android.content.res.TypedArray
+import android.graphics.Color
 import android.graphics.RectF
+import android.graphics.Rect
 import android.graphics.Paint
+import android.os.Handler
 import android.animation.ValueAnimator
 import com.mobsandgeeks.myil.R
-import android.content.res.TypedArray
-import android.graphics.Paint.Cap
-import android.os.Handler
-import android.graphics.Paint.Align
-import android.graphics.Paint.Style
-import android.graphics.Rect
-import android.graphics.Color
-import com.mobsandgeeks.myil.dashboard.extensions.format
+import mobsandgeeks.myil.extensions.format
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -125,7 +122,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
-    var edges: Edge = Edge.FLAT
+    var edges: Edge = Edge.ROUNDED
         set(value) {
             $edges = value
             invalidate()
@@ -162,8 +159,8 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     }
 
     override fun onDraw(canvas: Canvas) {
-        paint.setStyle(Style.STROKE)
-        paint.setStrokeCap(if (Edge.FLAT == edges) Cap.BUTT else Cap.ROUND)
+        paint.setStyle(Paint.Style.STROKE)
+        paint.setStrokeCap(if (Edge.FLAT == edges) Paint.Cap.BUTT else Paint.Cap.ROUND)
 
         // Progress bar background
         paint.setStrokeWidth(barStrokeWidth * barBackgroundStrokeFraction)
@@ -184,7 +181,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                     number.toInt() else number.format(1)
             val text = if (isPercent) "${displayNumber}%" else "${displayNumber}"
 
-            paint.setStyle(Style.FILL)
+            paint.setStyle(Paint.Style.FILL)
             paint.setTextSize(textSize)
             paint.setColor(textColor)
 

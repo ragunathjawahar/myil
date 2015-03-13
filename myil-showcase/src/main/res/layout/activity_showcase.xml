@@ -9,17 +9,15 @@
                 android:paddingBottom="@dimen/activity_vertical_margin"
                 tools:context=".ShowcaseActivity">
 
-    <com.mobsandgeeks.myil.dashboard.CircularProgressBar
+    <mobsandgeeks.myil.widget.CircularProgressBar
         android:id="@+id/circularProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#ffff8913"
         app:displayTextAs="progress"
-        app:barStrokeFraction="0.15"
         app:barColor="#ffcc0000"
         app:progress="1"
         app:max="10"
-        app:numberFormat="decimal"
-        app:showText="true"/>
+        app:numberFormat="decimal"/>
 
 </RelativeLayout>

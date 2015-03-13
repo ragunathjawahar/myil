@@ -1,4 +1,4 @@
-package com.mobsandgeeks.myil.extensions
+package mobsandgeeks.myil.extensions
 
 /**
  * Extension function from
