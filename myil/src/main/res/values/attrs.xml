@@ -9,11 +9,13 @@
         <attr name="barBackgroundStrokeFraction" format="float|reference" />
         <attr name="progress" format="float|reference" />
         <attr name="max" format="float|reference" />
+        <attr name="showText" format="boolean|reference"/>
+
         <attr name="edges" format="enum">
             <enum name="flat" value="0"/>
             <enum name="rounded" value="1"/>
         </attr>
-        <attr name="showText" format="boolean|reference"/>
+
         <attr name="displayTextAs" format="enum">
             <enum name="percent" value="0"/>
             <enum name="progress" value="1"/>
