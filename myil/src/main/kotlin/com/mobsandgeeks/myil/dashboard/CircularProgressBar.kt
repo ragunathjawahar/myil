@@ -29,6 +29,7 @@ import android.graphics.Paint.Align
 import android.graphics.Paint.Style
 import android.graphics.Rect
 import android.graphics.Color
+import com.mobsandgeeks.myil.dashboard.extensions.format
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -45,7 +46,7 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     private val STROKE_FRACTION_BAR_BACKGROUND_MIN = 0.0f
     private val STROKE_FRACTION_BAR_BACKGROUND_MAX = 1.0f
 
-    private val TEXT_SIZE_FRACTION = 0.28f;
+    private val TEXT_SIZE_FRACTION = 0.28f
 
     private val COLOR_BAR = 0xff6a8afe.toInt()
     private val COLOR_BAR_BACKGROUND = 0xffababab.toInt()
@@ -64,6 +65,9 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
 
     private val DISPLAY_TEXT_PERCENT = 0
     private val DISPLAY_TEXT_PROGRESS = 1
+
+    private val NUMBER_FORMAT_INTEGER = 0
+    private val NUMBER_FORMAT_DECIMAL = 1
 
     // Metrics
     private var barStrokeWidth = 0.0f
@@ -133,6 +137,12 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
             invalidate()
         }
 
+    var numberFormat: NumberFormat = NumberFormat.INTEGER
+        set(value) {
+            $numberFormat = value
+            invalidate()
+        }
+
     var progress: Float = 0.0f
         set(value) {
             $progress = value
@@ -168,8 +178,11 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         // Text
         if (showText) {
             val isPercent = DisplayText.PERCENT.equals(displayTextAs)
-            val text = if (isPercent) "${(barProgressAngle / 360 * 100).toInt()}%"
-                    else "${(barProgressAngle * max / 360).toInt()}"
+            val number = if (isPercent) (barProgressAngle / 360 * 100)
+                    else (barProgressAngle * max / 360)
+            val displayNumber = if (NumberFormat.INTEGER.equals(numberFormat))
+                    number.toInt() else number.format(1)
+            val text = if (isPercent) "${displayNumber}%" else "${displayNumber}"
 
             paint.setStyle(Style.FILL)
             paint.setTextSize(textSize)
@@ -266,6 +279,12 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
                 val isPercent = xmlDisplayTextAs == -1 || xmlDisplayTextAs == DISPLAY_TEXT_PERCENT
                 $displayTextAs = if (isPercent) DisplayText.PERCENT else DisplayText.PROGRESS
             }
+            if (typedArray.hasValue(R.styleable.CircularProgressBar_numberFormat)) {
+                val xmlNumberFormat = typedArray.getInt(
+                        R.styleable.CircularProgressBar_numberFormat, -1)
+                val isInteger = xmlNumberFormat == -1 || xmlNumberFormat == NUMBER_FORMAT_INTEGER
+                $numberFormat = if (isInteger) NumberFormat.INTEGER else NumberFormat.DECIMAL
+            }
         } finally {
             typedArray.recycle()
         }
@@ -330,5 +349,13 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
     enum class DisplayText {
         PERCENT
         PROGRESS
+    }
+
+    /**
+     * Number format used for displaying progress / percentage.
+     */
+    enum class NumberFormat {
+        INTEGER
+        DECIMAL
     }
 }

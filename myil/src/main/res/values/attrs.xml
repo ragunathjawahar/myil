@@ -20,6 +20,11 @@
             <enum name="percent" value="0"/>
             <enum name="progress" value="1"/>
         </attr>
+
+        <attr name="numberFormat" format="enum">
+            <enum name="integer" value="0"/>
+            <enum name="decimal" value="1"/>
+        </attr>
     </declare-styleable>
 
 </resources>

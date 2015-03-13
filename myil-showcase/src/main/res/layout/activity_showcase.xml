@@ -16,9 +16,10 @@
         android:textColor="#ffff8913"
         app:displayTextAs="progress"
         app:barStrokeFraction="0.15"
-        app:barColor="@android:color/holo_red_dark"
+        app:barColor="#ffcc0000"
         app:progress="1"
         app:max="10"
+        app:numberFormat="decimal"
         app:showText="true"/>
 
 </RelativeLayout>
