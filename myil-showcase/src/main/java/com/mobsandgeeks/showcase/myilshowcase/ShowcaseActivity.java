@@ -15,11 +15,11 @@
 package com.mobsandgeeks.showcase.myilshowcase;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 
 import java.util.Random;
 
@@ -44,7 +44,7 @@ public class ShowcaseActivity extends Activity {
         ButterKnife.inject(this);
 
         mRandom = new Random();
-        mCircularProgressBar.setTextColor(Color.DKGRAY);
+        mCircularProgressBar.setProgressBarInterpolator(new OvershootInterpolator());
         mCircularProgressBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

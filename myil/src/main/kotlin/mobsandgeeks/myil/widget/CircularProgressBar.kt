@@ -27,6 +27,8 @@ import android.os.Handler
 import android.animation.ValueAnimator
 import com.mobsandgeeks.myil.R
 import mobsandgeeks.myil.extensions.format
+import android.view.animation.Interpolator
+import android.view.animation.AccelerateDecelerateInterpolator
 
 /**
  * @author Ragunath Jawahar {@literal <rj@mobsandgeeks.com>}
@@ -150,6 +152,12 @@ public class CircularProgressBar(context: Context, attrs: AttributeSet?)
         set(value) {
             $max = value
             animateProgressBar()
+        }
+
+    var progressBarInterpolator: Interpolator? = AccelerateDecelerateInterpolator()
+        set(value) {
+            $progressBarInterpolator = value ?: AccelerateDecelerateInterpolator()
+            progressAnimator.setInterpolator($progressBarInterpolator)
         }
 
     // Initializer
